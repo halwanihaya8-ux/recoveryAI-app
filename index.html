@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>RecoveryAI</title>
+<link rel="stylesheet" href="style.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════
+     SCREEN 1 — LOGIN
+═══════════════════════════════════════════ -->
+<div id="screen-login" class="screen active">
+  <div class="login-bg">
+    <div class="login-orb orb1"></div>
+    <div class="login-orb orb2"></div>
+    <div class="login-orb orb3"></div>
+  </div>
+  <div class="login-wrap">
+    <div class="login-logo">
+      <div class="logo-ring">
+        <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+          <circle cx="18" cy="18" r="16" stroke="url(#lg1)" stroke-width="2.5" stroke-dasharray="60 40" stroke-linecap="round"/>
+          <circle cx="18" cy="18" r="8" fill="url(#lg2)" opacity="0.9"/>
+          <defs>
+            <linearGradient id="lg1" x1="0" y1="0" x2="36" y2="36" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="#6C63FF"/>
+              <stop offset="100%" stop-color="#00D4AA"/>
+            </linearGradient>
+            <linearGradient id="lg2" x1="0" y1="0" x2="36" y2="36" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="#6C63FF"/>
+              <stop offset="100%" stop-color="#00D4AA"/>
+            </linearGradient>
+          </defs>
+        </svg>
+      </div>
+      <span class="logo-text">RecoveryAI</span>
+    </div>
+
+    <h1 class="login-title">Your recovery,<br>decoded.</h1>
+    <p class="login-sub">Sign in to see your personalised recovery score powered by your wearable data.</p>
+
+    <div id="login-error" class="alert alert-error hidden"></div>
+    <div id="login-success" class="alert alert-success hidden"></div>
+
+    <div class="tabs">
+      <button class="tab-btn active" id="tab-signin" onclick="switchTab('signin')">Sign in</button>
+      <button class="tab-btn" id="tab-register" onclick="switchTab('register')">Register</button>
+    </div>
+
+    <form id="form-signin" class="auth-form" onsubmit="handleLogin(event)">
+      <div class="field-group">
+        <label class="field-label">Email</label>
+        <input class="field-input" type="email" id="login-email" placeholder="you@example.com" autocomplete="email" required>
+      </div>
+      <div class="field-group">
+        <label class="field-label">Password</label>
+        <div class="field-password-wrap">
+          <input class="field-input" type="password" id="login-password" placeholder="••••••••" autocomplete="current-password" required>
+          <button type="button" class="toggle-pw" onclick="togglePw('login-password', this)">Show</button>
+        </div>
+      </div>
+      <button type="submit" class="btn-primary" id="btn-login">
+        <span class="btn-label">Sign in</span>
+        <span class="btn-spinner hidden"></span>
+      </button>
+    </form>
+
+    <form id="form-register" class="auth-form hidden" onsubmit="handleRegister(event)">
+      <div class="field-group">
+        <label class="field-label">Full name</label>
+        <input class="field-input" type="text" id="reg-name" placeholder="Haya Al-Wani" required>
+      </div>
+      <div class="field-group">
+        <label class="field-label">Email</label>
+        <input class="field-input" type="email" id="reg-email" placeholder="you@example.com" required>
+      </div>
+      <div class="field-group">
+        <label class="field-label">Password <span class="field-hint">(min 8 characters)</span></label>
+        <div class="field-password-wrap">
+          <input class="field-input" type="password" id="reg-password" placeholder="••••••••" minlength="8" required>
+          <button type="button" class="toggle-pw" onclick="togglePw('reg-password', this)">Show</button>
+        </div>
+      </div>
+      <button type="submit" class="btn-primary" id="btn-register">
+        <span class="btn-label">Create account</span>
+        <span class="btn-spinner hidden"></span>
+      </button>
+      <p class="register-note">Registration creates a developer account. You can then create user profiles and connect wearables.</p>
+    </form>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     SCREEN 2 — DASHBOARD
+═══════════════════════════════════════════ -->
+<div id="screen-dashboard" class="screen hidden">
+  <div class="topbar">
+    <div class="topbar-left">
+      <div class="greeting" id="db-greeting">Good morning</div>
+      <div class="topbar-name" id="db-name">—</div>
+    </div>
+    <div class="topbar-right">
+      <div class="device-pill" id="db-device-pill">
+        <div class="device-dot"></div>
+        <span id="db-device-label">Loading...</span>
+      </div>
+      <div class="avatar" id="db-avatar">?</div>
+    </div>
+  </div>
+
+  <div class="scroll-body">
+    <div id="db-error-banner" class="error-banner hidden">
+      <span id="db-error-msg"></span>
+      <button onclick="retryDashboard()">Retry</button>
+    </div>
+
+    <div id="db-no-device" class="empty-state hidden">
+      <div class="empty-icon">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="5" y="2" width="14" height="20" rx="2"/><circle cx="12" cy="17" r="1"/></svg>
+      </div>
+      <div class="empty-title">No wearable connected</div>
+      <div class="empty-sub">Connect a device to start tracking your recovery data automatically.</div>
+      <button class="btn-outline" onclick="goTo('profile'); openAddDevice()">Connect a device</button>
+    </div>
+
+    <div id="db-content">
+      <!-- Score hero -->
+      <div class="hero-card">
+        <div class="hero-ring-wrap">
+          <svg class="ring-svg" viewBox="0 0 120 120">
+            <circle class="ring-track" cx="60" cy="60" r="50"/>
+            <circle class="ring-fill" id="db-ring" cx="60" cy="60" r="50"
+              stroke-dasharray="314" stroke-dashoffset="314"
+              transform="rotate(-90 60 60)"/>
+            <defs>
+              <linearGradient id="ring-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#6C63FF"/>
+                <stop offset="100%" stop-color="#00D4AA"/>
+              </linearGradient>
+            </defs>
+          </svg>
+          <div class="ring-center">
+            <div class="ring-value" id="db-score">—</div>
+            <div class="ring-unit">HRV ms</div>
+            <div class="ring-badge" id="db-zone-badge">—</div>
+          </div>
+        </div>
+        <div class="hero-right">
+          <div class="hero-label">Tomorrow's recovery</div>
+          <div class="hero-insight" id="db-insight">Fetching your data...</div>
+          <div class="hero-ci" id="db-ci"></div>
+          <div class="hero-chips">
+            <div class="chip"><div class="chip-val purple" id="db-hrv-avg">—</div><div class="chip-lbl">HRV avg</div></div>
+            <div class="chip"><div class="chip-val teal" id="db-sleep-avg">—</div><div class="chip-lbl">Sleep</div></div>
+            <div class="chip"><div class="chip-val coral" id="db-hr-avg">—</div><div class="chip-lbl">HR</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Biometrics grid -->
+      <div class="section-label">TODAY'S BIOMETRICS</div>
+      <div class="metrics-grid">
+        <div class="metric-card purple-accent">
+          <div class="metric-icon purple-bg">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6C63FF" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+          </div>
+          <div class="metric-value"><span id="m-hrv">—</span><span class="metric-unit">ms</span></div>
+          <div class="metric-name">HRV (RMSSD)</div>
+          <div class="metric-bar"><div class="metric-fill purple-fill" id="b-hrv"></div></div>
+        </div>
+        <div class="metric-card coral-accent">
+          <div class="metric-icon coral-bg">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FF6B6B" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+          </div>
+          <div class="metric-value"><span id="m-hr">—</span><span class="metric-unit">bpm</span></div>
+          <div class="metric-name">Resting HR</div>
+          <div class="metric-bar"><div class="metric-fill coral-fill" id="b-hr"></div></div>
+        </div>
+        <div class="metric-card teal-accent">
+          <div class="metric-icon teal-bg">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00D4AA" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/><path d="M12 6v6l4 2"/></svg>
+          </div>
+          <div class="metric-value"><span id="m-sleep">—</span><span class="metric-unit">hrs</span></div>
+          <div class="metric-name">Sleep</div>
+          <div class="metric-bar"><div class="metric-fill teal-fill" id="b-sleep"></div></div>
+        </div>
+        <div class="metric-card amber-accent">
+          <div class="metric-icon amber-bg">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFB347" stroke-width="2"><polyline points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+          </div>
+          <div class="metric-value"><span id="m-steps">—</span><span class="metric-unit">k</span></div>
+          <div class="metric-name">Steps</div>
+          <div class="metric-bar"><div class="metric-fill amber-fill" id="b-steps"></div></div>
+        </div>
+      </div>
+
+      <!-- AI Insight -->
+      <div class="section-label">AI INSIGHT</div>
+      <div class="insight-card">
+        <div class="insight-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6C63FF" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+        </div>
+        <div>
+          <div class="insight-title" id="db-ins-title">Analyzing patterns...</div>
+          <div class="insight-body" id="db-ins-body">Your wearable data is being processed.</div>
+        </div>
+      </div>
+
+      <!-- Days tracked -->
+      <div class="days-note" id="db-days-note"></div>
+    </div>
+  </div>
+
+  <nav class="bottom-nav">
+    <div class="nav-item active" onclick="goTo('dashboard')">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      <span>Home</span>
+    </div>
+    <div class="nav-item" onclick="goTo('activity')">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      <span>Activity</span>
+    </div>
+    <div class="nav-item" onclick="goTo('profile')">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      <span>Profile</span>
+    </div>
+  </nav>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     SCREEN 3 — ACTIVITY
+═══════════════════════════════════════════ -->
+<div id="screen-activity" class="screen hidden">
+  <div class="topbar">
+    <div class="topbar-left">
+      <div class="greeting">7-day overview</div>
+      <div class="topbar-name">Activity</div>
+    </div>
+    <div class="avatar" id="act-avatar">?</div>
+  </div>
+
+  <div class="scroll-body">
+    <!-- Summary stats -->
+    <div class="stat-row">
+      <div class="stat-card">
+        <div class="stat-val purple" id="act-hrv-avg">—</div>
+        <div class="stat-lbl">Avg HRV</div>
+        <div class="stat-unit">ms</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-val teal" id="act-sleep-avg">—</div>
+        <div class="stat-lbl">Avg sleep</div>
+        <div class="stat-unit">hrs</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-val coral" id="act-hr-avg">—</div>
+        <div class="stat-lbl">Avg HR</div>
+        <div class="stat-unit">bpm</div>
+      </div>
+    </div>
+
+    <!-- HRV chart -->
+    <div class="section-label">HRV TREND — LAST 5 DAYS</div>
+    <div class="chart-card">
+      <div class="chart-header">
+        <span class="chart-title">Heart rate variability</span>
+        <span class="chart-legend"><span class="leg-dot purple-dot"></span>HRV &nbsp;<span class="leg-dot teal-dot"></span>Baseline</span>
+      </div>
+      <div class="bar-chart" id="hrv-bars"></div>
+    </div>
+
+    <!-- Sleep chart -->
+    <div class="section-label">SLEEP — LAST 5 DAYS</div>
+    <div class="chart-card">
+      <div class="chart-header">
+        <span class="chart-title">Sleep duration</span>
+        <span class="chart-legend"><span class="leg-dot teal-dot"></span>Hours</span>
+      </div>
+      <div class="bar-chart" id="sleep-bars"></div>
+    </div>
+
+    <!-- Daily log -->
+    <div class="section-label">DAILY LOG</div>
+    <div id="daily-log"></div>
+  </div>
+
+  <nav class="bottom-nav">
+    <div class="nav-item" onclick="goTo('dashboard')">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      <span>Home</span>
+    </div>
+    <div class="nav-item active" onclick="goTo('activity')">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      <span>Activity</span>
+    </div>
+    <div class="nav-item" onclick="goTo('profile')">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      <span>Profile</span>
+    </div>
+  </nav>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     SCREEN 4 — PROFILE
+═══════════════════════════════════════════ -->
+<div id="screen-profile" class="screen hidden">
+  <div class="profile-hero">
+    <div class="profile-avatar" id="prof-avatar">?</div>
+    <div class="profile-name" id="prof-name">—</div>
+    <div class="profile-email" id="prof-email">—</div>
+    <div class="device-pill" id="prof-device-pill">
+      <div class="device-dot"></div>
+      <span id="prof-device-label">No device</span>
+    </div>
+  </div>
+
+  <div class="scroll-body profile-scroll">
+    <div class="pstats-row">
+      <div class="pstat"><div class="pstat-val purple" id="prof-hrv">—</div><div class="pstat-lbl">Avg HRV</div></div>
+      <div class="pstat"><div class="pstat-val teal" id="prof-sleep">—</div><div class="pstat-lbl">Avg sleep</div></div>
+      <div class="pstat"><div class="pstat-val amber" id="prof-days">—</div><div class="pstat-lbl">Days tracked</div></div>
+    </div>
+
+    <!-- Personal info -->
+    <div class="section-label">PERSONAL INFO</div>
+    <div class="settings-group" id="personal-info-section">
+      <div class="settings-item" onclick="toggleEditName()">
+        <div class="settings-icon purple-bg"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6C63FF" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+        <div class="settings-label">Full name</div>
+        <div class="settings-val" id="pinfo-name">—</div>
+        <div class="settings-arrow">›</div>
+      </div>
+      <div class="settings-item">
+        <div class="settings-icon purple-bg"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6C63FF" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
+        <div class="settings-label">Email</div>
+        <div class="settings-val" id="pinfo-email">—</div>
+      </div>
+      <div class="settings-item" onclick="openChangePassword()">
+        <div class="settings-icon purple-bg"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6C63FF" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+        <div class="settings-label">Change password</div>
+        <div class="settings-arrow">›</div>
+      </div>
+    </div>
+
+    <!-- Inline edit name -->
+    <div id="edit-name-form" class="inline-form hidden">
+      <div class="field-group">
+        <label class="field-label">New name</label>
+        <input class="field-input" type="text" id="edit-name-input" placeholder="Your full name">
+      </div>
+      <div id="edit-name-error" class="alert alert-error hidden"></div>
+      <div class="inline-form-btns">
+        <button class="btn-ghost" onclick="toggleEditName()">Cancel</button>
+        <button class="btn-primary-sm" onclick="saveProfileName()">Save</button>
+      </div>
+    </div>
+
+    <!-- Change password modal -->
+    <div id="change-pw-form" class="inline-form hidden">
+      <div class="field-group">
+        <label class="field-label">Current password</label>
+        <input class="field-input" type="password" id="pw-current" placeholder="••••••••">
+      </div>
+      <div class="field-group">
+        <label class="field-label">New password <span class="field-hint">(min 8 chars)</span></label>
+        <input class="field-input" type="password" id="pw-new" placeholder="••••••••" minlength="8">
+      </div>
+      <div id="pw-error" class="alert alert-error hidden"></div>
+      <div id="pw-success" class="alert alert-success hidden"></div>
+      <div class="inline-form-btns">
+        <button class="btn-ghost" onclick="closeChangePassword()">Cancel</button>
+        <button class="btn-primary-sm" onclick="submitChangePassword()">Update</button>
+      </div>
+    </div>
+
+    <!-- Connected devices -->
+    <div class="section-label">CONNECTED DEVICES</div>
+    <div class="settings-group">
+      <div id="connections-list">
+        <div class="settings-item muted">
+          <div class="settings-label">Loading connections...</div>
+        </div>
+      </div>
+      <div class="settings-item" onclick="openAddDevice()">
+        <div class="settings-icon teal-bg"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#00D4AA" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+        <div class="settings-label">Add another device</div>
+        <div class="settings-arrow">›</div>
+      </div>
+    </div>
+
+    <!-- Add device panel -->
+    <div id="add-device-panel" class="inline-form hidden">
+      <div class="section-label" style="margin-top:0">AVAILABLE PROVIDERS</div>
+      <div class="provider-grid">
+        <div class="provider-card" onclick="connectProvider('oura')">
+          <div class="provider-icon" style="background:rgba(0,212,170,.15);color:#00D4AA">O</div>
+          <div class="provider-name">Oura Ring</div>
+        </div>
+        <div class="provider-card" onclick="connectProvider('garmin')">
+          <div class="provider-icon" style="background:rgba(108,99,255,.15);color:#6C63FF">G</div>
+          <div class="provider-name">Garmin</div>
+        </div>
+        <div class="provider-card" onclick="connectProvider('apple')">
+          <div class="provider-icon" style="background:rgba(255,255,255,.1);color:#fff">A</div>
+          <div class="provider-name">Apple Health</div>
+        </div>
+        <div class="provider-card" onclick="connectProvider('fitbit')">
+          <div class="provider-icon" style="background:rgba(0,182,213,.15);color:#00B6D5">F</div>
+          <div class="provider-name">Fitbit</div>
+        </div>
+        <div class="provider-card" onclick="connectProvider('whoop')">
+          <div class="provider-icon" style="background:rgba(255,107,107,.15);color:#FF6B6B">W</div>
+          <div class="provider-name">Whoop</div>
+        </div>
+        <div class="provider-card" onclick="connectProvider('polar')">
+          <div class="provider-icon" style="background:rgba(255,179,71,.15);color:#FFB347">P</div>
+          <div class="provider-name">Polar</div>
+        </div>
+      </div>
+      <p class="provider-note">Selecting a provider will open its authorisation page. Your data syncs automatically after connecting.</p>
+      <button class="btn-ghost" onclick="closeAddDevice()">Cancel</button>
+    </div>
+
+    <!-- Privacy & data -->
+    <div class="section-label">PRIVACY & DATA</div>
+    <div class="settings-group">
+      <div class="settings-item" onclick="openPrivacy()">
+        <div class="settings-icon teal-bg"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#00D4AA" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+        <div class="settings-label">View my data</div>
+        <div class="settings-arrow">›</div>
+      </div>
+      <div class="settings-item" onclick="exportData()">
+        <div class="settings-icon teal-bg"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#00D4AA" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></div>
+        <div class="settings-label">Export data (JSON)</div>
+        <div class="settings-arrow">›</div>
+      </div>
+      <div class="settings-item danger" onclick="confirmDeleteAccount()">
+        <div class="settings-icon danger-bg"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#FF6B6B" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></div>
+        <div class="settings-label" style="color:#FF6B6B">Delete account</div>
+        <div class="settings-arrow" style="color:#FF6B6B">›</div>
+      </div>
+    </div>
+
+    <!-- Privacy panel -->
+    <div id="privacy-panel" class="inline-form hidden">
+      <div class="data-summary" id="data-summary-content">Loading your data summary...</div>
+      <button class="btn-ghost" onclick="closePrivacy()">Close</button>
+    </div>
+
+    <!-- App -->
+    <div class="section-label">APP</div>
+    <div class="settings-group">
+      <div class="settings-item">
+        <div class="settings-icon gray-bg"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg></div>
+        <div class="settings-label">Version</div>
+        <div class="settings-val">1.0.0</div>
+      </div>
+      <div class="settings-item">
+        <div class="settings-icon gray-bg"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg></div>
+        <div class="settings-label">Backend</div>
+        <div class="settings-val">recoveryai-wearables.onrender.com</div>
+      </div>
+    </div>
+
+    <button class="btn-logout" onclick="handleLogout()">Sign out</button>
+    <div style="height:16px"></div>
+  </div>
+
+  <nav class="bottom-nav">
+    <div class="nav-item" onclick="goTo('dashboard')">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      <span>Home</span>
+    </div>
+    <div class="nav-item" onclick="goTo('activity')">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      <span>Activity</span>
+    </div>
+    <div class="nav-item active" onclick="goTo('profile')">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      <span>Profile</span>
+    </div>
+  </nav>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
