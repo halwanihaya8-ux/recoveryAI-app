@@ -16,7 +16,7 @@
      POST /ai/predict/{user_id}       — RecoveryAI prediction
 ══════════════════════════════════════════ */
 
-const BASE = 'https://recoveryai-wearables.onrender.com';
+const BASE = 'https://boggle-molar-consensus.ngrok-free.dev';
 
 /* ── State ── */
 const state = {
