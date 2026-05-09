@@ -46,6 +46,7 @@
     <div id="login-error" class="alert alert-error hidden"></div>
     <div id="login-success" class="alert alert-success hidden"></div>
 
+<<<<<<< HEAD
     <form id="form-signin" class="auth-form" onsubmit="handleLogin(event)">
       <div class="field-group">
         <label class="field-label">YOUR NAME</label>
@@ -67,6 +68,53 @@
     </form>
     <input id="tab-signin" type="hidden">
     <input id="tab-register" type="hidden">
+=======
+    <div class="tabs">
+      <button class="tab-btn active" id="tab-signin" onclick="switchTab('signin')">Sign in</button>
+      <button class="tab-btn" id="tab-register" onclick="switchTab('register')">Register</button>
+    </div>
+
+    <form id="form-signin" class="auth-form" onsubmit="handleLogin(event)">
+      <div class="field-group">
+        <label class="field-label">Email</label>
+        <input class="field-input" type="email" id="login-email" placeholder="you@example.com" autocomplete="email" required>
+      </div>
+      <div class="field-group">
+        <label class="field-label">Password</label>
+        <div class="field-password-wrap">
+          <input class="field-input" type="password" id="login-password" placeholder="••••••••" autocomplete="current-password" required>
+          <button type="button" class="toggle-pw" onclick="togglePw('login-password', this)">Show</button>
+        </div>
+      </div>
+      <button type="submit" class="btn-primary" id="btn-login">
+        <span class="btn-label">Sign in</span>
+        <span class="btn-spinner hidden"></span>
+      </button>
+    </form>
+
+    <form id="form-register" class="auth-form hidden" onsubmit="handleRegister(event)">
+      <div class="field-group">
+        <label class="field-label">Full name</label>
+        <input class="field-input" type="text" id="reg-name" placeholder="Username" required>
+      </div>
+      <div class="field-group">
+        <label class="field-label">Email</label>
+        <input class="field-input" type="email" id="reg-email" placeholder="you@example.com" required>
+      </div>
+      <div class="field-group">
+        <label class="field-label">Password <span class="field-hint">(min 8 characters)</span></label>
+        <div class="field-password-wrap">
+          <input class="field-input" type="password" id="reg-password" placeholder="••••••••" minlength="8" required>
+          <button type="button" class="toggle-pw" onclick="togglePw('reg-password', this)">Show</button>
+        </div>
+      </div>
+      <button type="submit" class="btn-primary" id="btn-register">
+        <span class="btn-label">Create account</span>
+        <span class="btn-spinner hidden"></span>
+      </button>
+      <p class="register-note">Registration creates a developer account. You can then create user profiles and connect wearables.</p>
+    </form>
+>>>>>>> 36745bd8cbb06d63240c8c9fbd9869a7ff8c6f77
   </div>
 </div>
 
@@ -96,6 +144,7 @@
 
     <div id="db-no-device" class="empty-state hidden">
       <div class="empty-icon">
+<<<<<<< HEAD
         <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
       </div>
       <div class="empty-title">Add your wearable data</div>
@@ -131,6 +180,13 @@
           <button type="submit" class="btn-primary-sm">Get my score</button>
         </div>
       </form>
+=======
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="5" y="2" width="14" height="20" rx="2"/><circle cx="12" cy="17" r="1"/></svg>
+      </div>
+      <div class="empty-title">No wearable connected</div>
+      <div class="empty-sub">Connect a device to start tracking your recovery data automatically.</div>
+      <button class="btn-outline" onclick="goTo('profile'); openAddDevice()">Connect a device</button>
+>>>>>>> 36745bd8cbb06d63240c8c9fbd9869a7ff8c6f77
     </div>
 
     <div id="db-content">
